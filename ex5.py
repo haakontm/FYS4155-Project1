@@ -8,16 +8,12 @@ from sklearn.utils import resample
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.pipeline import make_pipeline
 
-import warnings
-from sklearn.exceptions import DataConversionWarning
-warnings.filterwarnings(action='ignore', category=DataConversionWarning)
-
 RANDOMSTATE = 43
 
 np.random.seed(RANDOMSTATE)
 
 max_degree = 9
-datapoints = 40
+datapoints = 100
 num_bootstraps = datapoints
 noise = 0.5
 
@@ -77,11 +73,26 @@ for model in models:
 		bootstrap_MSE[i, degree] = np.mean(mse)
 	i += 1
 
-print(bootstrap_MSE)
+cv_score = np.zeros((len(models), max_degree))
+
+i= 0
+for model in models:
+	for degree in tqdm(range(max_degree)):
+		X = create_X(x, y, degree)
+
+		cv_score[i, degree] = -np.mean(cross_val_score(model, X, z.reshape(-1, 1), scoring='neg_mean_squared_error', cv=KFold(10)))
+	i += 1
 
 fig, ax = plt.subplots()
 ax.plot(range(max_degree), bootstrap_MSE[0, :], label='linreg')
 ax.plot(range(max_degree), bootstrap_MSE[1, :], label='ridge')
 ax.plot(range(max_degree), bootstrap_MSE[2, :], label='lasso')
+ax.legend()
+plt.show()
+
+fig, ax = plt.subplots()
+ax.plot(range(max_degree), cv_score[0, :], label='linreg')
+ax.plot(range(max_degree), cv_score[1, :], label='ridge')
+ax.plot(range(max_degree), cv_score[2, :], label='lasso')
 ax.legend()
 plt.show()

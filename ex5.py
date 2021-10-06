@@ -13,7 +13,7 @@ RANDOMSTATE = 43
 np.random.seed(RANDOMSTATE)
 
 max_degree = 9
-datapoints = 100
+datapoints = 40
 num_bootstraps = datapoints
 noise = 0.5
 
@@ -87,6 +87,8 @@ fig, ax = plt.subplots()
 ax.plot(range(max_degree), bootstrap_MSE[0, :], label='linreg')
 ax.plot(range(max_degree), bootstrap_MSE[1, :], label='ridge')
 ax.plot(range(max_degree), bootstrap_MSE[2, :], label='lasso')
+ax.set_xlabel('Degree of polynomial')
+ax.set_title('MSE for different regressiontechniques')
 ax.legend()
 plt.show()
 
@@ -94,5 +96,8 @@ fig, ax = plt.subplots()
 ax.plot(range(max_degree), cv_score[0, :], label='linreg')
 ax.plot(range(max_degree), cv_score[1, :], label='ridge')
 ax.plot(range(max_degree), cv_score[2, :], label='lasso')
+ax.set_xlabel('log10(lambda)')
+ax.set_xlabel('Degree of polynomial')
+ax.set_title('MSE for different regressiontechniques')
 ax.legend()
 plt.show()

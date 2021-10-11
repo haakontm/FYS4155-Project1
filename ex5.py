@@ -8,16 +8,16 @@ from sklearn.utils import resample
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.pipeline import make_pipeline
 
-RANDOMSTATE = 43
+RANDOMSTATE = 42
 
 np.random.seed(RANDOMSTATE)
 
 max_degree = 9
-datapoints = 40
+datapoints = 100
 num_bootstraps = datapoints
 noise = 0.5
 
-lmb_ridge = 4.52e-5  # best value from ex4
+lmb_ridge = 0.0003  # best value from ex4
 lmb_lasso = 3.59e-5  # best value form ex5
 
 def FrankeFunction(x,y):
@@ -80,7 +80,7 @@ for model in models:
 	for degree in tqdm(range(max_degree)):
 		X = create_X(x, y, degree)
 
-		cv_score[i, degree] = -np.mean(cross_val_score(model, X, z.reshape(-1, 1), scoring='neg_mean_squared_error', cv=KFold(10)))
+		cv_score[i, degree] = -np.mean(cross_val_score(model, X, z.reshape(-1, 1), scoring='neg_mean_squared_error', cv=KFold(10, shuffle=True)))
 	i += 1
 
 fig, ax = plt.subplots()
@@ -88,7 +88,7 @@ ax.plot(range(max_degree), bootstrap_MSE[0, :], label='linreg')
 ax.plot(range(max_degree), bootstrap_MSE[1, :], label='ridge')
 ax.plot(range(max_degree), bootstrap_MSE[2, :], label='lasso')
 ax.set_xlabel('Degree of polynomial')
-ax.set_title('MSE for different regressiontechniques')
+ax.set_title('Bootstrap MSE with {} datapoints'.format(datapoints**2))
 ax.legend()
 plt.show()
 
@@ -98,6 +98,6 @@ ax.plot(range(max_degree), cv_score[1, :], label='ridge')
 ax.plot(range(max_degree), cv_score[2, :], label='lasso')
 ax.set_xlabel('log10(lambda)')
 ax.set_xlabel('Degree of polynomial')
-ax.set_title('MSE for different regressiontechniques')
+ax.set_title('Cross validation MSE with {} datapoints'.format(datapoints**2))
 ax.legend()
 plt.show()
